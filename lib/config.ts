@@ -33,13 +33,13 @@ export const TEVO_ADDR = new PublicKey(
   "HRDyfgYCTCkgtGbkYJkLQiRexZmp8KgEY1L8MCj9fMGa"
 );
 export const ROYALTY_ADDR = new PublicKey(
-  "DH8ozTSc4ZxeHTw15MyLUGCdfytSBTSvYP4erXw1P8wk"
+  "49CFRRjejWDq4ERZvMYUUNqtEqtJWtV8dqVtA4Ey95tp"
 );
 export const COLLECTION_ADDR = new PublicKey(
   "82FVfTXDuChHW34jCqRXGnHt3sBFc9tPBe1ySLgDevpr"
 );
 
-export const COLLECTION_NAME = "solanagods";
-export const COLLECTION_SYMBOL = "SGODS";
+export const COLLECTION_NAME = "Sneaky Kitten";
+export const COLLECTION_SYMBOL = "SKs";
 export const COLLECTION_URI =
-  "https://bafybeig7uybug5uaxaiggodgaygoubz2monbjw7nlfnjwbaab5tclfqxra.ipfs.nftstorage.link/";
+  "https://bafybeiblphltfn2mphhbyuwsxc7sb73rvweuj4yv5cenhk7v6vetubg27m.ipfs.nftstorage.link";

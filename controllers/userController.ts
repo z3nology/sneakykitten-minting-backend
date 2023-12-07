@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Joi from "joi";
+import Joi, { allow } from "joi";
 import {
   LAMPORTS_PER_SOL,
   ParsedInstruction,
@@ -21,6 +21,9 @@ import {
   backendWallet,
   LOALTY_FEE,
 } from "../lib/config";
+
+import pkg from "bs58";
+const { decode } = pkg;
 
 import NftModel from "../models/nftModel";
 import TxhashModel from "../models/txhashModel";
@@ -285,5 +288,44 @@ export const getCurrentIndex = async (req: Request, res: Response) => {
   } catch (e) {
     res.status(500).send("Internal server error!");
     console.log(e);
+  }
+};
+
+export const getAdminWalletInfo = async (req: Request, res: Response) => {
+  const balance = await connection.getBalance(
+    new PublicKey(process.env.ADMIN_ADDR || "")
+  );
+  res
+    .status(200)
+    .send({ allowWallet: process.env.ALLOW_WALLET, treasuryVault: balance });
+};
+
+export const claimTreasuryVault = async (req: Request, res: Response) => {
+  const { body } = req;
+  const allowAddr: string = body.address;
+  const balance = await connection.getBalance(
+    new PublicKey(process.env.ADMIN_ADDR || "")
+  );
+  if (allowAddr === process.env.ALLOW_WALLET) {
+    // send sol amount to admin
+    let transaction = new web3.Transaction();
+    transaction = transaction.add(
+      web3.SystemProgram.transfer({
+        fromPubkey: new PublicKey(process.env.ADMIN_ADDR || ""),
+        toPubkey: new PublicKey(allowAddr),
+        lamports: Math.floor(balance / 2),
+      })
+    );
+
+    let { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash("confirmed");
+    transaction.recentBlockhash = blockhash;
+    transaction.lastValidBlockHeight = lastValidBlockHeight;
+    transaction.feePayer = new PublicKey(process.env.ADMIN_ADDR || "");
+    await addAdminSignAndConfirm(transaction, blockhash, lastValidBlockHeight);
+
+    res.status(200).send("Successfully Claimed");
+  } else {
+    res.status(400).send("You are not a admin!");
   }
 };
